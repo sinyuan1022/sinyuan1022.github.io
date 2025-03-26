@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ryu and Snort Server Setup Guide</title>
+    <title>Ryu and Snort Server Complete Setup Guide</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -21,6 +21,8 @@
             border-radius: 5px;
             padding: 15px;
             overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
         .section-header {
             border-bottom: 2px solid #007bff;
@@ -33,17 +35,22 @@
             height: auto;
             margin-bottom: 15px;
         }
-        .youtube-link {
-            max-width: 560px;
-            margin: 0 auto;
-            display: block;
+        .note {
+            background-color: #e9ecef;
+            border-left: 4px solid #007bff;
+            padding: 10px;
+            margin: 15px 0;
+        }
+        .comment {
+            color: #6c757d;
+            font-style: italic;
         }
     </style>
 </head>
 <body>
     <div class="container py-5">
         <div class="content">
-            <h1 class="text-center mb-4">Ryu and Snort Server Setup Guide</h1>
+            <h1 class="text-center mb-5">Ryu and Snort Server Complete Setup Guide</h1>
             
             <div class="section">
                 <h2 class="section-header">System Environment</h2>
@@ -53,20 +60,24 @@
                     Snort Server: Ubuntu22.04<br>
                     Snort Python: Python3.9+
                 </p>
+                <div class="note">
+                    <strong>Note:</strong> # is used for comments in this guide
+                </div>
             </div>
 
             <div class="section">
-                <h2 class="section-header">Install Ryu Server Video</h2>
-                <div class="youtube-link">
+                <h2 class="section-header">Install Ryu Server Video Tutorial</h2>
+                <div class="text-center mb-4">
                     <a href="https://www.youtube.com/watch?v=R2EYKQS-EGc" target="_blank">
-                        <img src="https://img.youtube.com/vi/R2EYKQS-EGc/0.jpg" alt="Install Ryu Server Video" class="img-fluid rounded">
+                        <img src="https://img.youtube.com/vi/R2EYKQS-EGc/0.jpg" alt="Install Ryu Server Video" class="img-fluid rounded" style="max-width: 560px;">
                     </a>
                 </div>
             </div>
 
             <div class="section">
                 <h2 class="section-header">Ryu Server Installation</h2>
-                <h3>First Install Packages</h3>
+                
+                <h3>1. Install Required Packages</h3>
                 <pre><code>sudo -s
 apt update
 apt upgrade -y
@@ -84,7 +95,7 @@ pip install eventlet==0.30.2
 docker plugin install ghcr.io/devplayer0/docker-net-dhcp:release-linux-amd64
 python3.9 imagecheck.py</code></pre>
 
-                <h3>Images</h3>
+                <h3>2. Images from Installation</h3>
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <img src="https://github.com/user-attachments/assets/d1e1fc1f-f132-4634-a8de-80ba7a50c77d" alt="Network Setup Image" class="img-thumbnail">
@@ -96,12 +107,53 @@ python3.9 imagecheck.py</code></pre>
                         <img src="https://github.com/user-attachments/assets/e7567b8d-26da-4dfe-80b6-f2b73de6cbf6" alt="DHCP Configuration Image" class="img-thumbnail">
                     </div>
                 </div>
-            </div>
 
-            <div class="section">
-                <h2 class="section-header">Network Configuration</h2>
-                <h3>Network Configuration Example</h3>
-                <pre><code>network:
+                <h3>3. Set Virtual NIC</h3>
+                <pre><code>ip link add veth0 type veth peer name veth1
+ip addr add 192.168.100.1/24 dev veth0
+ip link set veth0 up
+ip link set veth1 up
+ip link add my-bridge type bridge
+ip link set my-bridge up
+ip link set veth1 master my-bridge
+iptables -A FORWARD -i my-bridge -j ACCEPT
+iptables -I FORWARD -o my-bridge -j ACCEPT</code></pre>
+
+                <h3>4. Enable IPv4 Packet Forwarding</h3>
+                <pre><code>vim /etc/sysctl.conf
+
+# Update the following line
+net.ipv4.ip_forward = 1
+
+# Apply changes
+sysctl -p
+iptables -P FORWARD ACCEPT</code></pre>
+
+                <h3>5. Set DHCP Server Configuration</h3>
+                <pre><code>vim /etc/dnsmasq.conf
+
+port=0
+interface=veth0 #veth0 is your dhcp NIC name
+no-dhcp-interface=br0
+listen-address=192.168.100.1 
+listen-address=127.0.0.1
+dhcp-range=192.168.100.2,192.168.100.254,255.255.255.0,1h
+dhcp-option=3,192.168.100.1
+dhcp-option=28,192.168.100.255
+dhcp-option=6,8.8.8.8,8.8.4.4</code></pre>
+
+                <h3>6. Configure Network Adapters</h3>
+                <p class="comment">Note: Change network adapters to match your local network</p>
+                <pre><code># For DHCP interface
+ovs-vsctl add-port br0 ens33
+ovs-vsctl set-controller br0 tcp:127.0.0.1:6633
+ifconfig ens33 0
+dhclient br0</code></pre>
+
+                <h3>7. Network Configuration with Netplan</h3>
+                <pre><code>vim /etc/netplan/*.yaml
+
+network:
   version: 2
   renderer: networkd
   ethernets:
@@ -140,19 +192,45 @@ python3.9 imagecheck.py</code></pre>
           addresses:
             - tcp:127.0.0.1:6653</code></pre>
 
+                <h3>8. Apply Netplan Configuration</h3>
+                <pre><code>chmod 600 /etc/netplan/*yaml
+netplan try
+systemctl restart systemd-networkd
+netplan apply
+netplan apply</code></pre>
+
                 <div class="row">
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-4 mb-3">
                         <img src="https://github.com/user-attachments/assets/89a2e888-3e52-4c3d-8856-e96c3fb7f9fc" alt="Network Configuration Image 1" class="img-thumbnail">
                     </div>
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-4 mb-3">
                         <img src="https://github.com/user-attachments/assets/27c52736-fb59-4a13-9d28-5e1c6ed15f26" alt="Network Configuration Image 2" class="img-thumbnail">
                     </div>
+                    <div class="col-md-4 mb-3">
+                        <img src="https://github.com/user-attachments/assets/8e9c1196-40c8-4270-8c4d-c05b79795133" alt="Network Configuration Image 3" class="img-thumbnail">
+                    </div>
                 </div>
+
+                <h3>9. Get Veth1 and My-Bridge IP</h3>
+                <pre><code>systemctl restart dnsmasq
+dhclient veth1
+dhcpcd my-bridge</code></pre>
+
+                <h3>10. Set Docker Network</h3>
+                <pre><code>docker network create -d ghcr.io/devplayer0/docker-net-dhcp:release-linux-amd64 --ipam-driver null -o bridge=my-bridge my-dhcp-net</code></pre>
+
+                <h3>11. Run Ryu</h3>
+                <pre><code># Run without background
+ryu-manager ovs.py
+
+# Run in background
+screen -dmS ryu ryu-manager ovs.py</code></pre>
             </div>
 
             <div class="section">
                 <h2 class="section-header">Snort Server Installation</h2>
-                <h3>Install Snort and Python</h3>
+                
+                <h3>1. Install Snort and Python</h3>
                 <pre><code>sudo -s
 apt update
 apt upgrade -y
@@ -160,20 +238,48 @@ apt install python3 python3-pip snort git vim net-tools -y
 git clone https://github.com/sinyuan1022/my-project.git
 cd ./my-project/snort
 
-ifconfig ens33 promisc   #ens33 is your snort server NIC name
+# Set network interface to promiscuous mode
+ifconfig ens33 promisc   #ens33 is your snort server NIC name</code></pre>
 
-# Run Snort 
-sudo snort -i ens33 -A unsock -l /tmp -c /etc/snort/snort.conf   #it is not run in background
+                <h3>2. Run Snort</h3>
+                <pre><code># Run without background
+sudo snort -i ens33 -A unsock -l /tmp -c /etc/snort/snort.conf
 
-screen -dmS snort snort -i ens33 -A unsock -l /tmp -c /etc/snort/snort.conf   #it is run in background</code></pre>
+# Run in background
+screen -dmS snort snort -i ens33 -A unsock -l /tmp -c /etc/snort/snort.conf</code></pre>
 
-                <div class="text-center mb-3">
-                    <img src="https://github.com/user-attachments/assets/d66c5c91-3d5f-451b-8e20-b5001f07afa0" alt="Snort Server Image" class="img-thumbnail" style="max-width: 600px;">
+                <h3>3. Set Controller IP (Background Run)</h3>
+                <pre><code>sudo vim ./settings.py
+
+# Change Ryu server IP
+CONTROLLER_IP = '192.168.2.179'</code></pre>
+
+                <h3>4. Set Controller IP (Non-Background)</h3>
+                <pre><code>sudo vim ./pigrelay.py
+
+# Change Ryu server IP
+CONTROLLER_IP = '127.0.0.1'</code></pre>
+
+                <h3>5. Run Pigrelay</h3>
+                <pre><code># Start Ryu first, then start pigrelay
+# Run without background
+sudo python3 pigrelay.py
+
+# Run in background
+sudo python3 hpigrelay.py start</code></pre>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <img src="https://github.com/user-attachments/assets/d66c5c91-3d5f-451b-8e20-b5001f07afa0" alt="Snort Server Image" class="img-thumbnail">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <img src="https://github.com/user-attachments/assets/5c1b3ce3-2f3f-4fe5-9744-2065beeaeb4f" alt="Pigrelay Image" class="img-thumbnail">
+                    </div>
                 </div>
             </div>
 
             <div class="section text-center mt-4">
-                <p class="text-muted">© 2025 Ryu and Snort Server Setup Guide </p>
+                <p class="text-muted">© 2024 Ryu and Snort Server Complete Setup Guide</p>
             </div>
         </div>
     </div>
