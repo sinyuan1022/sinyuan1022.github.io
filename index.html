@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ryu & Snort Server Setup Guide</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
-            background-color: #f4f4f4;
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
         }
         .container {
             max-width: 900px;
@@ -16,13 +16,16 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
         }
         h1, h2 {
-            color: #333;
+            color: #343a40;
+            text-align: center;
         }
         pre {
-            background: #eee;
-            padding: 10px;
+            background: #272c34;
+            color: #f8f9fa;
+            padding: 15px;
             border-radius: 5px;
             overflow-x: auto;
         }
@@ -34,7 +37,7 @@
         }
         .note {
             font-style: italic;
-            color: #555;
+            color: #6c757d;
         }
     </style>
 </head>
@@ -43,7 +46,7 @@
         <h1>Ryu & Snort Server Setup Guide</h1>
         <h2>Ryu Server Installation</h2>
         <p>First, install Open vSwitch (OVS), Docker, and other required packages:</p>
-        <pre>sudo -s
+        <pre><code>sudo -s
 apt update
 apt upgrade -y
 apt install openvswitch-switch vim net-tools iptables-persistent dhcpcd5 htop ifmetric software-properties-common git screen dnsmasq -y
@@ -58,9 +61,9 @@ pip install setuptools==67.6.1
 pip install ryu docker scapy
 pip install eventlet==0.30.2
 docker plugin install ghcr.io/devplayer0/docker-net-dhcp:release-linux-amd64
-python3.9 imagecheck.py</pre>
+python3.9 imagecheck.py</code></pre>
         <h3>Set Virtual NIC</h3>
-        <pre>ip link add veth0 type veth peer name veth1
+        <pre><code>ip link add veth0 type veth peer name veth1
 ip addr add 192.168.100.1/24 dev veth0
 ip link set veth0 up
 ip link set veth1 up
@@ -68,34 +71,35 @@ ip link add my-bridge type bridge
 ip link set my-bridge up
 ip link set veth1 master my-bridge
 iptables -A FORWARD -i my-bridge -j ACCEPT
-iptables -I FORWARD -o my-bridge -j ACCEPT</pre>
-        <img src="https://github.com/user-attachments/assets/d1e1fc1f-f132-4634-a8de-80ba7a50c77d">
+iptables -I FORWARD -o my-bridge -j ACCEPT</code></pre>
+        <img src="https://github.com/user-attachments/assets/d1e1fc1f-f132-4634-a8de-80ba7a50c77d" class="img-fluid">
         <h3>Enable IPv4 Packet Forwarding</h3>
-        <pre>vim /etc/sysctl.conf
+        <pre><code>vim /etc/sysctl.conf
 
-net.ipv4.ip_forward = 1 #update</pre>
+net.ipv4.ip_forward = 1 #update</code></pre>
         <h3>Apply Changes</h3>
-        <pre>sysctl -p
-iptables -P FORWARD ACCEPT</pre>
+        <pre><code>sysctl -p
+iptables -P FORWARD ACCEPT</code></pre>
         <h2>Snort Server Installation</h2>
-        <pre>sudo -s
+        <pre><code>sudo -s
 apt update
 apt upgrade -y
 apt install python3 python3-pip snort git vim net-tools -y
 git clone https://github.com/sinyuan1022/my-project.git
 cd ./my-project/snort
 
-ifconfig ens33 promisc   #ens33 is your snort server NIC name</pre>
+ifconfig ens33 promisc   #ens33 is your snort server NIC name</code></pre>
         <h3>Run Snort</h3>
-        <pre>sudo snort -i ens33 -A unsock -l /tmp -c /etc/snort/snort.conf</pre>
-        <img src="https://github.com/user-attachments/assets/d66c5c91-3d5f-451b-8e20-b5001f07afa0">
+        <pre><code>sudo snort -i ens33 -A unsock -l /tmp -c /etc/snort/snort.conf</code></pre>
+        <img src="https://github.com/user-attachments/assets/d66c5c91-3d5f-451b-8e20-b5001f07afa0" class="img-fluid">
         <h3>Set Controller IP</h3>
-        <pre>sudo vim ./settings.py
-CONTROLLER_IP = '192.168.2.179'   #change ryu server IP</pre>
+        <pre><code>sudo vim ./settings.py
+CONTROLLER_IP = '192.168.2.179'   #change ryu server IP</code></pre>
         <h3>Run PigRelay</h3>
-        <pre>sudo python3 pigrelay.py</pre>
-        <img src="https://github.com/user-attachments/assets/5c1b3cd2-3a0e-40ed-a944-7626fb6b2dad">
+        <pre><code>sudo python3 pigrelay.py</code></pre>
+        <img src="https://github.com/user-attachments/assets/5c1b3cd2-3a0e-40ed-a944-7626fb6b2dad" class="img-fluid">
         <p class="note">Ensure Ryu is started before running PigRelay.</p>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
