@@ -3,67 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ryu & Snort Server Setup Guide</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <title>Ryu and Snort Server Setup Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'code-bg': '#f4f4f4',
+                        'code-border': '#e0e0e0',
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f8f9fa;
-        }
-        .container {
-            max-width: 900px;
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            margin-top: 30px;
-        }
-        h1, h2 {
-            color: #343a40;
-            text-align: center;
-        }
-        pre {
-            background: #272c34;
-            color: #f8f9fa;
-            padding: 15px;
-            border-radius: 5px;
+        .code-block {
+            background-color: #f4f4f4;
+            border: 1px solid #e0e0e0;
+            border-radius: 0.25rem;
+            padding: 1rem;
+            margin: 1rem 0;
             overflow-x: auto;
         }
-        img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 5px;
-            margin: 10px 0;
-        }
-        .note {
-            font-style: italic;
-            color: #6c757d;
+        .section-header {
+            border-bottom: 2px solid #3182ce;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <h1>Ryu & Snort Server Setup Guide</h1>
-        <h2>Ryu Server Installation</h2>
-        <p>First, install Open vSwitch (OVS), Docker, and other required packages:</p>
-        <pre><code>sudo -s
+<body class="bg-gray-50 text-gray-800">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <header class="mb-8">
+            <h1 class="text-4xl font-bold text-blue-600 mb-4">Ryu and Snort Server Setup Guide</h1>
+            <p class="text-xl text-gray-600">Comprehensive installation and configuration guide for Ryu and Snort servers</p>
+        </header>
+
+        <section class="mb-8">
+            <h2 class="text-2xl font-semibold section-header">System Environment</h2>
+            <div class="bg-white shadow-md rounded-lg p-6">
+                <ul class="list-disc list-inside">
+                    <li>Ryu Server: Ubuntu 22.04</li>
+                    <li>Ryu Python: Python 3.9</li>
+                    <li>Snort Server: Ubuntu 22.04</li>
+                    <li>Snort Python: Python 3.9+</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-2xl font-semibold section-header">Installation Video</h2>
+            <div class="bg-white shadow-md rounded-lg p-6">
+                <a href="https://www.youtube.com/watch?v=R2EYKQS-EGc" target="_blank" class="text-blue-600 hover:underline">
+                    Watch Installation Video on YouTube
+                </a>
+            </div>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-2xl font-semibold section-header">Ryu Server Setup</h2>
+            
+            <div class="bg-white shadow-md rounded-lg p-6 mb-4">
+                <h3 class="text-xl font-semibold mb-4">1. Install Required Packages</h3>
+                <div class="code-block">
+                    <pre><code>sudo -s
 apt update
 apt upgrade -y
 apt install openvswitch-switch vim net-tools iptables-persistent dhcpcd5 htop ifmetric software-properties-common git screen dnsmasq -y
 apt install docker.io=20.10.21-0ubuntu1~22.04.3 -y
 add-apt-repository ppa:deadsnakes/ppa
-apt update
-git clone https://github.com/sinyuan1022/my-project.git
-cd ./my-project/ryu/
-apt install python3.9 python3.9-distutils -y
+apt update</code></pre>
+                </div>
+            </div>
+
+            <div class="bg-white shadow-md rounded-lg p-6 mb-4">
+                <h3 class="text-xl font-semibold mb-4">2. Install Python and Dependencies</h3>
+                <div class="code-block">
+                    <pre><code>apt install python3.9 python3.9-distutils -y
 python3.9 get-pip.py
 pip install setuptools==67.6.1 
 pip install ryu docker scapy
-docker plugin install ghcr.io/devplayer0/docker-net-dhcp:release-linux-amd64
-python3.9 imagecheck.py</code></pre>
-        
-        <h3>Set Virtual NIC</h3>
-        <pre><code>ip link add veth0 type veth peer name veth1
+pip install eventlet==0.30.2
+docker plugin install ghcr.io/devplayer0/docker-net-dhcp:release-linux-amd64</code></pre>
+                </div>
+            </div>
+
+            <div class="bg-white shadow-md rounded-lg p-6 mb-4">
+                <h3 class="text-xl font-semibold mb-4">3. Network Configuration</h3>
+                <div class="code-block">
+                    <pre><code>ip link add veth0 type veth peer name veth1
 ip addr add 192.168.100.1/24 dev veth0
 ip link set veth0 up
 ip link set veth1 up
@@ -72,87 +101,63 @@ ip link set my-bridge up
 ip link set veth1 master my-bridge
 iptables -A FORWARD -i my-bridge -j ACCEPT
 iptables -I FORWARD -o my-bridge -j ACCEPT</code></pre>
-        
-        <h3>Enable IPv4 Packet Forwarding</h3>
-        <pre><code>vim /etc/sysctl.conf
+                </div>
+            </div>
+        </section>
 
-net.ipv4.ip_forward = 1 #update</code></pre>
-        
-        <h3>Apply Changes</h3>
-        <pre><code>sysctl -p
-iptables -P FORWARD ACCEPT</code></pre>
-        
-        <h3>Set DHCP Server</h3>
-        <pre><code>vim /etc/dnsmasq.conf</code></pre>
-        <pre><code>port=0
-interface=veth0
-no-dhcp-interface=br0
-listen-address=192.168.100.1 
-listen-address=127.0.0.1
-dhcp-range=192.168.100.2,192.168.100.254,255.255.255.0,1h
-dhcp-option=3,192.168.100.1
-dhcp-option=28,192.168.100.255
-dhcp-option=6,8.8.8.8,8.8.4.4</code></pre>
-        
-        <h3>Set OVS Network Adapter</h3>
-        <pre><code>ovs-vsctl add-port br0 ens33
-ovs-vsctl set-controller br0 tcp:127.0.0.1:6633
-ifconfig ens33 0
-dhclient br0</code></pre>
-        
-        <h3>Set Static IP Configuration</h3>
-        <pre><code>vim /etc/netplan/*.yaml</code></pre>
-        <pre><code>network:
-  version: 2
-  renderer: networkd
-  ethernets:
-    ens33: 
-      dhcp4: no
-  bridges:
-    br0:
-      interfaces: [ens33]
-      addresses:
-        - 192.168.254.137/24
-      nameservers:
-        addresses:
-          - 8.8.8.8
-          - 8.8.4.4
-      routes:
-        - to: default
-          via: 192.168.254.2</code></pre>
-        <h3>Apply Netplan</h3>
-        <pre><code>chmod 600 /etc/netplan/*yaml
-netplan try
-systemctl restart systemd-networkd
-netplan apply</code></pre>
-        
-        <h3>Set Docker Network</h3>
-        <pre><code>docker network create -d ghcr.io/devplayer0/docker-net-dhcp:release-linux-amd64 --ipam-driver null -o bridge=my-bridge my-dhcp-net</code></pre>
-        
-        <h3>Run Ryu</h3>
-        <pre><code>screen -dmS ryu ryu-manager ovs.py</code></pre>
-        
-        <h2>Snort Server Installation</h2>
-        <pre><code>sudo -s
+        <section class="mb-8">
+            <h2 class="text-2xl font-semibold section-header">Snort Server Setup</h2>
+            
+            <div class="bg-white shadow-md rounded-lg p-6 mb-4">
+                <h3 class="text-xl font-semibold mb-4">1. Install Snort and Python</h3>
+                <div class="code-block">
+                    <pre><code>sudo -s
 apt update
 apt upgrade -y
 apt install python3 python3-pip snort git vim net-tools -y
 git clone https://github.com/sinyuan1022/my-project.git
-cd ./my-project/snort
-ifconfig ens33 promisc</code></pre>
-        
-        <h3>Run Snort</h3>
-        <pre><code>screen -dmS snort snort -i ens33 -A unsock -l /tmp -c /etc/snort/snort.conf</code></pre>
-        
-        <h3>Set Controller IP</h3>
-        <pre><code>vim ./settings.py
-CONTROLLER_IP = '192.168.2.179'</code></pre>
-        
-        <h3>Run PigRelay</h3>
-        <pre><code>sudo python3 pigrelay.py</code></pre>
-        
-        <p class="note">Ensure Ryu is started before running PigRelay.</p>
+cd ./my-project/snort</code></pre>
+                </div>
+            </div>
+
+            <div class="bg-white shadow-md rounded-lg p-6 mb-4">
+                <h3 class="text-xl font-semibold mb-4">2. Configure Network Interface</h3>
+                <div class="code-block">
+                    <pre><code>ifconfig ens33 promisc   # Replace ens33 with your network interface</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-2xl font-semibold section-header">Running Services</h2>
+            
+            <div class="bg-white shadow-md rounded-lg p-6 mb-4">
+                <h3 class="text-xl font-semibold mb-4">Ryu Server</h3>
+                <div class="code-block">
+                    <pre><code># Run in foreground
+ryu-manager ovs.py
+
+# Run in background
+screen -dmS ryu ryu-manager ovs.py</code></pre>
+                </div>
+            </div>
+
+            <div class="bg-white shadow-md rounded-lg p-6">
+                <h3 class="text-xl font-semibold mb-4">Snort Server</h3>
+                <div class="code-block">
+                    <pre><code># Run in foreground
+sudo snort -i ens33 -A unsock -l /tmp -c /etc/snort/snort.conf
+
+# Run in background
+screen -dmS snort snort -i ens33 -A unsock -l /tmp -c /etc/snort/snort.conf</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <footer class="mt-8 text-center text-gray-600">
+            <p>Documentation for Ryu and Snort Server Setup</p>
+            <p>Original GitHub Repository: <a href="https://github.com/sinyuan1022/my-project" class="text-blue-600 hover:underline">sinyuan1022/my-project</a></p>
+        </footer>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
