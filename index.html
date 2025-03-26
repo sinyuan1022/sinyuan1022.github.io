@@ -95,20 +95,7 @@ pip install eventlet==0.30.2
 docker plugin install ghcr.io/devplayer0/docker-net-dhcp:release-linux-amd64
 python3.9 imagecheck.py</code></pre>
 
-                <h3>2. Images from Installation</h3>
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <img src="https://github.com/user-attachments/assets/d1e1fc1f-f132-4634-a8de-80ba7a50c77d" alt="Network Setup Image" class="img-thumbnail">
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <img src="https://github.com/user-attachments/assets/1bef166b-2144-455b-9dbe-1c02ca343fe1" alt="IPv4 Forwarding Image" class="img-thumbnail">
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <img src="https://github.com/user-attachments/assets/e7567b8d-26da-4dfe-80b6-f2b73de6cbf6" alt="DHCP Configuration Image" class="img-thumbnail">
-                    </div>
-                </div>
-
-                <h3>3. Set Virtual NIC</h3>
+                <h3>2. Set Virtual NIC</h3>
                 <pre><code>ip link add veth0 type veth peer name veth1
 ip addr add 192.168.100.1/24 dev veth0
 ip link set veth0 up
@@ -118,8 +105,10 @@ ip link set my-bridge up
 ip link set veth1 master my-bridge
 iptables -A FORWARD -i my-bridge -j ACCEPT
 iptables -I FORWARD -o my-bridge -j ACCEPT</code></pre>
-
-                <h3>4. Enable IPv4 Packet Forwarding</h3>
+                <div class="col-md-4 mb-3">
+                        <img src="https://github.com/user-attachments/assets/d1e1fc1f-f132-4634-a8de-80ba7a50c77d" alt="Network Setup Image" class="img-thumbnail">
+                </div>
+                <h3>3. Enable IPv4 Packet Forwarding</h3>
                 <pre><code>vim /etc/sysctl.conf
 
 # Update the following line
@@ -128,8 +117,11 @@ net.ipv4.ip_forward = 1
 # Apply changes
 sysctl -p
 iptables -P FORWARD ACCEPT</code></pre>
+                    <div class="col-md-4 mb-3">
+                        <img src="https://github.com/user-attachments/assets/1bef166b-2144-455b-9dbe-1c02ca343fe1" alt="IPv4 Forwarding Image" class="img-thumbnail">
+                    </div>
 
-                <h3>5. Set DHCP Server Configuration</h3>
+                <h3>4. Set DHCP Server Configuration</h3>
                 <pre><code>vim /etc/dnsmasq.conf
 
 port=0
@@ -141,8 +133,10 @@ dhcp-range=192.168.100.2,192.168.100.254,255.255.255.0,1h
 dhcp-option=3,192.168.100.1
 dhcp-option=28,192.168.100.255
 dhcp-option=6,8.8.8.8,8.8.4.4</code></pre>
-
-                <h3>6. Configure Network Adapters</h3>
+                    <div class="col-md-4 mb-3">
+                        <img src="https://github.com/user-attachments/assets/e7567b8d-26da-4dfe-80b6-f2b73de6cbf6" alt="DHCP Configuration Image" class="img-thumbnail">
+                    </div>
+                <h3>5. Configure Network Adapters</h3>
                 <p class="comment">Note: Change network adapters to match your local network</p>
                 <pre><code># For DHCP interface
 ovs-vsctl add-port br0 ens33
@@ -150,7 +144,7 @@ ovs-vsctl set-controller br0 tcp:127.0.0.1:6633
 ifconfig ens33 0
 dhclient br0</code></pre>
 
-                <h3>7. Network Configuration with Netplan</h3>
+                <h3>6. Network Configuration with Netplan</h3>
                 <pre><code>vim /etc/netplan/*.yaml
 
 network:
@@ -191,41 +185,44 @@ network:
         controller:  
           addresses:
             - tcp:127.0.0.1:6653</code></pre>
-
-                <h3>8. Apply Netplan Configuration</h3>
-                <pre><code>chmod 600 /etc/netplan/*yaml
-netplan try
-systemctl restart systemd-networkd
-netplan apply
-netplan apply</code></pre>
-
-                <div class="row">
+                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <img src="https://github.com/user-attachments/assets/89a2e888-3e52-4c3d-8856-e96c3fb7f9fc" alt="Network Configuration Image 1" class="img-thumbnail">
                     </div>
                     <div class="col-md-4 mb-3">
                         <img src="https://github.com/user-attachments/assets/27c52736-fb59-4a13-9d28-5e1c6ed15f26" alt="Network Configuration Image 2" class="img-thumbnail">
                     </div>
+                 </div>
+
+                <h3>7. Apply Netplan Configuration</h3>
+                <pre><code>chmod 600 /etc/netplan/*yaml
+netplan try
+systemctl restart systemd-networkd
+netplan apply
+netplan apply</code></pre>
+
                     <div class="col-md-4 mb-3">
                         <img src="https://github.com/user-attachments/assets/8e9c1196-40c8-4270-8c4d-c05b79795133" alt="Network Configuration Image 3" class="img-thumbnail">
                     </div>
-                </div>
 
-                <h3>9. Get Veth1 and My-Bridge IP</h3>
+                <h3>8. Get Veth1 and My-Bridge IP</h3>
                 <pre><code>systemctl restart dnsmasq
 dhclient veth1
 dhcpcd my-bridge</code></pre>
 
-                <h3>10. Set Docker Network</h3>
+                <h3>9. Set Docker Network</h3>
                 <pre><code>docker network create -d ghcr.io/devplayer0/docker-net-dhcp:release-linux-amd64 --ipam-driver null -o bridge=my-bridge my-dhcp-net</code></pre>
 
-                <h3>11. Run Ryu</h3>
+                <h3>10. Run Ryu</h3>
                 <pre><code># Run without background
 ryu-manager ovs.py
 
 # Run in background
 screen -dmS ryu ryu-manager ovs.py</code></pre>
             </div>
+             <div class="col-md-4 mb-3">
+                        <img src="https://github.com/user-attachments/assets/5bad9195-2fa1-4b6f-bf22-71f6d2493ac5" alt="Network Configuration Image 3" class="img-thumbnail">
+                    </div>
 
             <div class="section">
                 <h2 class="section-header">Snort Server Installation</h2>
@@ -247,19 +244,26 @@ sudo snort -i ens33 -A unsock -l /tmp -c /etc/snort/snort.conf
 
 # Run in background
 screen -dmS snort snort -i ens33 -A unsock -l /tmp -c /etc/snort/snort.conf</code></pre>
+                <div class="col-md-6 mb-3">
+                        <img src="https://github.com/user-attachments/assets/d66c5c91-3d5f-451b-8e20-b5001f07afa0" alt="Snort Server Image" class="img-thumbnail">
+                </div>
 
                 <h3>3. Set Controller IP (Background Run)</h3>
                 <pre><code>sudo vim ./settings.py
 
 # Change Ryu server IP
 CONTROLLER_IP = '192.168.2.179'</code></pre>
-
+                     <div class="col-md-6 mb-3">
+                        <img src="https://github.com/user-attachments/assets/ffab87d9-36d9-4c8e-b589-58f80d045731" alt="Hpigrelay Image" class="img-thumbnail">
+                    </div>
                 <h3>4. Set Controller IP (Non-Background)</h3>
                 <pre><code>sudo vim ./pigrelay.py
 
 # Change Ryu server IP
 CONTROLLER_IP = '127.0.0.1'</code></pre>
-
+                    <div class="col-md-6 mb-3">
+                        <img src="https://github.com/user-attachments/assets/3ce5243b-ca75-40a7-aeb9-2d1aa68cf4ee" alt="Pigrelay Image" class="img-thumbnail">
+                    </div>
                 <h3>5. Run Pigrelay</h3>
                 <pre><code># Start Ryu first, then start pigrelay
 # Run without background
@@ -267,24 +271,9 @@ sudo python3 pigrelay.py
 
 # Run in background
 sudo python3 hpigrelay.py start</code></pre>
-
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <img src="https://github.com/user-attachments/assets/d66c5c91-3d5f-451b-8e20-b5001f07afa0" alt="Snort Server Image" class="img-thumbnail">
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <img src="https://github.com/user-attachments/assets/ffab87d9-36d9-4c8e-b589-58f80d04573" alt="Pigrelay Image" class="img-thumbnail">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <img src="https://github.com/user-attachments/assets/3ce5243b-ca75-40a7-aeb9-2d1aa68cf4ee" alt="Pigrelay Image" class="img-thumbnail">
-                    </div>
-                    <div class="col-md-6 mb-3">
+                     <div class="col-md-6 mb-3">
                         <img src="https://github.com/user-attachments/assets/5c1b3cd2-3a0e-40ed-a944-7626fb6b2dad" alt="Run Pigrelay Image" class="img-thumbnail">
-                    </div>
-                </div>
-            </div>
+                     </div>
 
             <div class="section text-center mt-4">
                 <p class="text-muted">© 2024 Ryu and Snort Server Complete Setup Guide</p>
