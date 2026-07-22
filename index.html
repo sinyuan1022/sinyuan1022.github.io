@@ -1,866 +1,591 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NetDefender - SDN-Based Network Defense Platform</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary-cyan: #00FFFF;
-            --secondary-purple: #7F7FFF;
-            --accent-green: #3AFF99;
-            --bg-dark: #0D1117;
-            --bg-card: #161B22;
-            --text-primary: #E6EDF3;
-            --text-secondary: #8B949E;
-            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --gradient-2: linear-gradient(135deg, #00FFFF 0%, #7F7FFF 100%);
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-primary);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-
-        /* Navigation */
-        nav {
-            position: sticky;
-            top: 0;
-            background: rgba(13, 17, 23, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 1rem 2rem;
-            z-index: 1000;
-            border-bottom: 1px solid rgba(0, 255, 255, 0.1);
-        }
-
-        nav .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        nav .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: var(--gradient-2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        nav ul {
-            list-style: none;
-            display: flex;
-            gap: 2rem;
-        }
-
-        nav a {
-            color: var(--text-primary);
-            text-decoration: none;
-            transition: color 0.3s;
-            font-weight: 500;
-        }
-
-        nav a:hover {
-            color: var(--primary-cyan);
-        }
-
-        /* Hero Section */
-        .hero {
-            padding: 8rem 2rem 6rem;
-            text-align: center;
-            background: var(--gradient-1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 50%, rgba(127, 127, 255, 0.1) 0%, transparent 50%);
-            animation: pulse 8s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .hero .container {
-            max-width: 900px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 1;
-        }
-
-        .hero h1 {
-            font-size: 3.5rem;
-            margin-bottom: 1rem;
-            font-weight: 700;
-            text-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
-        }
-
-        .hero .tagline {
-            font-size: 1.5rem;
-            color: var(--primary-cyan);
-            margin-bottom: 1.5rem;
-            font-weight: 600;
-        }
-
-        .hero p {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        .shield-icon {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 2rem;
-            filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.5));
-        }
-
-        /* Section Styles */
-        section {
-            padding: 5rem 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        h2 {
-            font-size: 2.5rem;
-            margin-bottom: 3rem;
-            text-align: center;
-            background: var(--gradient-2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* Features Grid */
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-        }
-
-        .feature-card {
-            background: var(--bg-card);
-            padding: 2rem;
-            border-radius: 12px;
-            border: 1px solid rgba(0, 255, 255, 0.1);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: var(--gradient-2);
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--primary-cyan);
-            box-shadow: 0 10px 30px rgba(0, 255, 255, 0.2);
-        }
-
-        .feature-card:hover::before {
-            transform: scaleX(1);
-        }
-
-        .feature-icon {
-            width: 50px;
-            height: 50px;
-            margin-bottom: 1rem;
-            filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.3));
-        }
-
-        .feature-card h3 {
-            font-size: 1.3rem;
-            margin-bottom: 1rem;
-            color: var(--primary-cyan);
-        }
-
-        .feature-card p {
-            color: var(--text-secondary);
-            line-height: 1.6;
-        }
-
-        /* System Requirements */
-        .requirements-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-
-        .requirement-card {
-            background: var(--bg-card);
-            padding: 2rem;
-            border-radius: 12px;
-            border: 1px solid rgba(127, 127, 255, 0.2);
-        }
-
-        .requirement-card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 1.5rem;
-            color: var(--secondary-purple);
-        }
-
-        .requirement-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .requirement-item:last-child {
-            border-bottom: none;
-        }
-
-        .requirement-label {
-            color: var(--text-secondary);
-        }
-
-        .requirement-value {
-            color: var(--accent-green);
-            font-weight: 600;
-        }
-
-        /* Installation Tabs */
-        .tabs-container {
-            background: var(--bg-card);
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid rgba(0, 255, 255, 0.1);
-        }
-
-        .tab-buttons {
-            display: flex;
-            background: rgba(0, 0, 0, 0.3);
-            border-bottom: 1px solid rgba(0, 255, 255, 0.1);
-            overflow-x: auto;
-        }
-
-        .tab-button {
-            padding: 1rem 2rem;
-            background: transparent;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.3s;
-            font-family: 'Inter', sans-serif;
-            font-size: 1rem;
-            font-weight: 500;
-            white-space: nowrap;
-            position: relative;
-        }
-
-        .tab-button::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: var(--primary-cyan);
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
-        }
-
-        .tab-button:hover {
-            color: var(--text-primary);
-            background: rgba(0, 255, 255, 0.05);
-        }
-
-        .tab-button.active {
-            color: var(--primary-cyan);
-        }
-
-        .tab-button.active::after {
-            transform: scaleX(1);
-        }
-
-        .tab-content {
-            display: none;
-            padding: 2rem;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Code Blocks */
-        pre {
-            background: rgba(0, 0, 0, 0.5);
-            padding: 1.5rem;
-            border-radius: 8px;
-            overflow-x: auto;
-            border-left: 3px solid var(--accent-green);
-            margin: 1rem 0;
-        }
-
-        code {
-            font-family: 'Courier New', monospace;
-            color: var(--accent-green);
-            font-size: 0.9rem;
-            line-height: 1.6;
-        }
-
-        .json-key {
-            color: #79C0FF;
-        }
-
-        .json-string {
-            color: #A5D6FF;
-        }
-
-        .json-number {
-            color: #79C0FF;
-        }
-
-        .bash-comment {
-            color: #8B949E;
-        }
-
-        .bash-command {
-            color: var(--accent-green);
-        }
-
-        /* Honeypot Cards */
-        .honeypot-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2rem;
-        }
-
-        .honeypot-card {
-            background: var(--bg-card);
-            padding: 2rem;
-            border-radius: 12px;
-            border: 1px solid rgba(58, 255, 153, 0.2);
-        }
-
-        .honeypot-card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-            color: var(--accent-green);
-        }
-
-        .honeypot-type {
-            color: var(--text-secondary);
-            margin-bottom: 1rem;
-            font-size: 0.9rem;
-        }
-
-        .ports-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-
-        .port-badge {
-            background: rgba(0, 255, 255, 0.1);
-            color: var(--primary-cyan);
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            border: 1px solid rgba(0, 255, 255, 0.3);
-        }
-
-        /* Network Architecture */
-        .architecture-container {
-            background: var(--bg-card);
-            padding: 2rem;
-            border-radius: 12px;
-            border: 1px solid rgba(127, 127, 255, 0.2);
-            text-align: center;
-        }
-
-        .architecture-container img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            box-shadow: 0 10px 40px rgba(0, 255, 255, 0.1);
-        }
-
-        .architecture-caption {
-            color: var(--text-secondary);
-            font-style: italic;
-        }
-
-        /* Footer */
-        footer {
-            background: var(--bg-card);
-            padding: 3rem 2rem;
-            text-align: center;
-            border-top: 1px solid rgba(0, 255, 255, 0.1);
-        }
-
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        .footer-link {
-            color: var(--text-primary);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: color 0.3s;
-        }
-
-        .footer-link:hover {
-            color: var(--primary-cyan);
-        }
-
-        .github-icon {
-            width: 24px;
-            height: 24px;
-        }
-
-        .copyright {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            nav ul {
-                display: none;
-            }
-
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-
-            .hero .tagline {
-                font-size: 1.2rem;
-            }
-
-            h2 {
-                font-size: 2rem;
-            }
-
-            section {
-                padding: 3rem 1rem;
-            }
-
-            .features-grid,
-            .requirements-grid,
-            .honeypot-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .tab-buttons {
-                flex-direction: column;
-            }
-
-            .tab-button {
-                text-align: left;
-            }
-        }
-
-        /* Scroll Indicator */
-        .scroll-indicator {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 3px;
-            background: var(--gradient-2);
-            z-index: 9999;
-            transition: width 0.2s;
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="NetDefender — an SDN + IDS driven network defense platform that redirects suspicious traffic into containerized honeypots." />
+  <title>NetDefender | SDN + IDS Traffic Redirection & Honeypots</title>
+  <style>
+    :root{
+      /* Dark-first, low-glare palette */
+      --bg0:#070a14;
+      --bg1:#0b1022;
+      --card:#0f1733;
+      --card2:#0c132c;
+      --text:#e7ebff;
+      --muted:#9aa8d6;
+      --line:rgba(255,255,255,.10);
+      --shadow: 0 18px 55px rgba(0,0,0,.55);
+      --brand:#7c5cff;
+      --brand2:#2ee6a6;
+      --warn:#ffce73;
+      --good:#74f3c6;
+      --bad:#ff6b84;
+      --radius:18px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans", Arial, sans-serif;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      color:var(--text);
+      background:
+        radial-gradient(900px 600px at 12% -10%, rgba(124,92,255,.28), transparent 60%),
+        radial-gradient(900px 600px at 95% 10%, rgba(46,230,166,.20), transparent 60%),
+        radial-gradient(650px 520px at 60% 110%, rgba(124,92,255,.15), transparent 62%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      line-height:1.65;
+      overflow-x:hidden;
+    }
+
+    a{color:inherit}
+    .wrap{max-width:1180px;margin:0 auto;padding:22px 18px 70px}
+
+    /* Animated background shimmer */
+    .bgfx{
+      position:fixed; inset:-30vh -30vw; pointer-events:none; z-index:-1;
+      background: conic-gradient(from 180deg at 50% 50%, rgba(124,92,255,.12), rgba(46,230,166,.10), rgba(255,206,115,.07), rgba(124,92,255,.12));
+      filter: blur(55px);
+      opacity:.55;
+      animation: drift 16s ease-in-out infinite alternate;
+      transform: translate3d(0,0,0);
+    }
+    @keyframes drift{
+      from{transform: translate3d(-2%, -1%, 0) rotate(-8deg) scale(1.05)}
+      to{transform: translate3d(3%, 2%, 0) rotate(10deg) scale(1.10)}
+    }
+
+    /* Top bar */
+    header{
+      position:sticky; top:0; z-index:50;
+      backdrop-filter: blur(10px) saturate(150%);
+      background: linear-gradient(180deg, rgba(6,9,18,.88), rgba(6,9,18,.55));
+      border-bottom: 1px solid var(--line);
+    }
+    .top{
+      max-width:1180px; margin:0 auto; padding:12px 18px;
+      display:flex; align-items:center; gap:12px;
+    }
+    .logo{display:flex; align-items:center; gap:10px; text-decoration:none; padding:8px 10px; border-radius:14px}
+    .mark{width:34px;height:34px;border-radius:12px; background: linear-gradient(135deg, var(--brand), var(--brand2)); box-shadow:0 18px 40px rgba(124,92,255,.20); position:relative;}
+    .mark:before{content:""; position:absolute; inset:9px; border-radius:9px; border:2px solid rgba(255,255,255,.70)}
+    .brand{display:flex; flex-direction:column; line-height:1.05}
+    .brand b{font-size:14px; letter-spacing:.2px}
+    .brand span{font-size:12px; color:var(--muted)}
+
+    .spacer{flex:1}
+
+    .search{
+      width:min(380px, 48vw);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:10px 12px;
+      background: rgba(255,255,255,.04);
+      color:var(--text);
+      outline:none;
+    }
+    .search::placeholder{color:rgba(154,168,214,.85)}
+
+    .btn{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      color:var(--text);
+      padding:9px 12px;
+      border-radius:14px;
+      cursor:pointer;
+      font-weight:700;
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+    }
+    .btn:hover{transform: translateY(-1px); background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.16)}
+    .btn:active{transform: translateY(0)}
+
+    /* Cards */
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+
+    /* Hero */
+    .hero{margin-top:18px; display:grid; grid-template-columns: 1.4fr .9fr; gap:18px; align-items:stretch}
+    @media (max-width: 980px){ .hero{grid-template-columns:1fr} .search{width:46vw} }
+
+    .hero-main{padding:22px 22px 18px}
+    .chips{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px}
+    .chip{
+      font-size:12px; color:var(--muted);
+      border:1px solid var(--line);
+      padding:7px 10px;
+      border-radius:999px;
+      background: rgba(255,255,255,.03);
+      transition: transform .12s ease;
+    }
+    .chip:hover{transform: translateY(-1px)}
+
+    h1{margin:0 0 10px; font-size:34px; letter-spacing:-.4px; line-height:1.14}
+    .lead{margin:0; color:var(--muted); font-size:15px}
+
+    .cta{margin-top:16px; display:flex; flex-wrap:wrap; gap:10px}
+    .cta a{
+      text-decoration:none;
+      display:inline-flex; align-items:center; gap:10px;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background: rgba(124,92,255,.14);
+      font-weight:800;
+      position:relative;
+      overflow:hidden;
+    }
+    .cta a.secondary{background: rgba(46,230,166,.12)}
+    .cta a:before{
+      content:"";
+      position:absolute; inset:-1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent);
+      transform: translateX(-120%);
+      transition: transform .8s ease;
+    }
+    .cta a:hover:before{transform: translateX(120%)}
+
+    .hero-side{padding:18px}
+    .side-title{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px}
+    .side-title b{font-size:14px}
+    .muted{color:var(--muted)}
+
+    .grid2{display:grid; grid-template-columns: 1fr 1fr; gap:12px}
+    @media (max-width: 560px){ .grid2{grid-template-columns:1fr} }
+
+    .mini{
+      padding:14px;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.03);
+      transition: transform .15s ease, border-color .15s ease;
+    }
+    .mini:hover{transform: translateY(-2px); border-color: rgba(255,255,255,.16)}
+    .mini b{display:block; margin-bottom:6px}
+    .mini div{font-size:13px; color:var(--muted)}
+
+    /* Content layout */
+    .content{margin-top:18px; display:grid; grid-template-columns: 280px 1fr; gap:18px; align-items:start}
+    @media (max-width: 980px){ .content{grid-template-columns:1fr} }
+
+    nav.toc{position:sticky; top:74px; padding:14px}
+    @media (max-width: 980px){ nav.toc{position:relative; top:auto} }
+
+    .toc h3{margin:6px 8px 10px; font-size:13px; color:var(--muted); letter-spacing:.2px}
+    .toc a{
+      display:flex; gap:10px; align-items:center;
+      text-decoration:none;
+      padding:9px 10px;
+      border-radius:12px;
+      color:var(--muted);
+      border:1px solid transparent;
+      transition: background .12s ease, border-color .12s ease, color .12s ease;
+    }
+    .toc a:hover{color:var(--text); background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.12)}
+    .dot{width:8px;height:8px;border-radius:999px;background: rgba(124,92,255,.55)}
+
+    article{min-width:0}
+    section.block{padding:20px 22px}
+    section.block + section.block{border-top:1px solid var(--line)}
+
+    h2{margin:0 0 10px; font-size:20px; letter-spacing:-.2px}
+    h3{margin:16px 0 8px; font-size:16px}
+    p{margin:0 0 10px}
+
+    .callout{
+      border:1px solid rgba(255,206,115,.18);
+      background: linear-gradient(180deg, rgba(255,206,115,.10), rgba(255,206,115,.04));
+      border-radius:16px;
+      padding:12px 14px;
+      margin:10px 0 14px;
+    }
+    .callout b{color:var(--warn)}
+
+    .imgwrap{margin:12px 0 0; border-radius:16px; overflow:hidden; border:1px solid var(--line)}
+    .imgwrap img{display:block; width:100%; height:auto; background: rgba(0,0,0,.18)}
+
+    .kbd{font-family:var(--mono); font-size:12px; padding:2px 6px; border-radius:8px; border:1px solid var(--line); background: rgba(255,255,255,.03)}
+    .inline{font-family:var(--mono); font-size:12.5px; background: rgba(255,255,255,.03); border:1px solid var(--line); padding:2px 6px; border-radius:8px}
+
+    pre{
+      margin:12px 0 14px;
+      background: #070b16;
+      color: #eaf2ff;
+      border: 1px solid rgba(255,255,255,.09);
+      border-radius:16px;
+      padding:14px;
+      overflow:auto;
+      font-family: var(--mono);
+      font-size: 12.5px;
+      line-height:1.55;
+    }
+
+    table{width:100%; border-collapse:separate; border-spacing:0; margin:10px 0 14px; overflow:hidden; border-radius:16px; border:1px solid var(--line)}
+    th,td{padding:10px; font-size:13px; border-bottom:1px solid var(--line); vertical-align:top}
+    th{background: rgba(255,255,255,.04); text-align:left}
+    tr:last-child td{border-bottom:none}
+
+    .cols{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+    @media (max-width: 860px){ .cols{grid-template-columns:1fr} }
+
+    .footer{padding:16px 18px; color:var(--muted); text-align:center; border-top:1px solid var(--line)}
+
+    /* Scroll reveal animation */
+    .reveal{opacity:0; transform: translateY(10px); filter: blur(2px); transition: opacity .7s ease, transform .7s ease, filter .7s ease}
+    .reveal.show{opacity:1; transform: translateY(0); filter: blur(0)}
+
+    /* Reduce motion accessibility */
+    @media (prefers-reduced-motion: reduce){
+      .bgfx{animation:none}
+      .reveal{transition:none}
+      .cta a:before{display:none}
+      .chip,.mini,.btn{transition:none}
+    }
+
+    .hide{display:none!important}
+  </style>
 </head>
 <body>
-    <div class="scroll-indicator" id="scrollIndicator"></div>
+  <div class="bgfx" aria-hidden="true"></div>
 
-    <!-- Navigation -->
-    <nav>
-        <div class="container">
-            <div class="logo">🛡️ NetDefender</div>
-            <ul>
-                <li><a href="#features">Features</a></li>
-                <li><a href="#requirements">Requirements</a></li>
-                <li><a href="#installation">Installation</a></li>
-                <li><a href="#honeypots">Honeypots</a></li>
-                <li><a href="#architecture">Architecture</a></li>
-            </ul>
+  <header>
+    <div class="top">
+      <a class="logo" href="#top" aria-label="NetDefender Home">
+        <div class="mark" aria-hidden="true"></div>
+        <div class="brand">
+          <b>NetDefender</b>
+          <span>SDN + IDS • Smart Redirection • Honeypots</span>
         </div>
-    </nav>
+      </a>
 
-    <!-- Hero Section -->
+      <div class="spacer"></div>
+
+      <input id="search" class="search" type="search" placeholder="Search: Snort, OVS, honeypot, ports…" aria-label="Search" />
+      <button id="copyRepo" class="btn" type="button">Copy Repo</button>
+    </div>
+  </header>
+
+  <main id="top" class="wrap">
     <section class="hero">
-        <div class="container">
-            <svg class="shield-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            </svg>
-            <h1>NetDefender</h1>
-            <p class="tagline">SDN-Based Network Defense Platform</p>
-            <p>A comprehensive network defense and traffic redirection platform that seamlessly integrates the Ryu controller, Open vSwitch, and Snort IDS. NetDefender enables automated threat detection and dynamic traffic redirection to containerized honeypots, providing an observable and controllable experimental defense environment.</p>
+      <div class="card hero-main reveal">
+        <div class="chips" aria-label="Key technologies">
+          <span class="chip">OSKen / Ryu controller</span>
+          <span class="chip">Open vSwitch (OVS)</span>
+          <span class="chip">Snort IDS</span>
+          <span class="chip">Containerized honeypots</span>
+          <span class="chip">Policy-driven forwarding</span>
         </div>
+
+        <h1>Turn suspicious traffic into intelligence—without exposing your real services.</h1>
+        <p class="lead">NetDefender combines SDN control and IDS visibility to detect hostile behavior early, then reroutes selected connections into honeypots. The result is a defensive “detour”: production stays protected while you still capture attacker activity for analysis.</p>
+
+        <div class="cta">
+          <a href="https://github.com/sinyuan1022/NetDefender" target="_blank" rel="noreferrer">Open GitHub →</a>
+          <a class="secondary" href="#install">Jump to install →</a>
+        </div>
+
+        <p class="muted" style="margin-top:12px">Tip: Use <span class="kbd">Ctrl</span> + <span class="kbd">F</span> or the search bar to jump to any keyword.</p>
+      </div>
+
+      <aside class="card hero-side reveal" aria-label="Quick facts">
+        <div class="side-title"><b>Quick facts</b><span class="muted">dark UI • GitHub Pages-ready</span></div>
+        <div class="grid2">
+          <div class="mini"><b>Deployment</b><div>Two-server (Controller + IDS) or single-server (combined).</div></div>
+          <div class="mini"><b>Baseline</b><div>Ubuntu 22.04+ and Python 3.9+.</div></div>
+          <div class="mini"><b>Core path</b><div>OVS → Controller policy → Redirect to honeypot.</div></div>
+          <div class="mini"><b>Important</b><div><b style="color:var(--warn)">Install Controller first</b> before Snort (two-server mode).</div></div>
+        </div>
+      </aside>
     </section>
 
-    <!-- Features Section -->
-    <section id="features">
-        <h2>Key Features</h2>
-        <div class="features-grid">
-            <div class="feature-card">
-                <svg class="feature-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="12" y1="8" x2="12" y2="12"/>
-                    <line x1="12" y1="16" x2="12.01" y2="16"/>
-                </svg>
-                <h3>SDN Controller</h3>
-                <p>Built on the OSKen/Ryu controller framework for flexible, programmable network control and policy management.</p>
+    <section class="content">
+      <nav class="card toc reveal" aria-label="Table of contents">
+        <h3>Contents</h3>
+        <a href="#overview"><span class="dot" aria-hidden="true"></span>Overview</a>
+        <a href="#requirements"><span class="dot" aria-hidden="true"></span>Requirements</a>
+        <a href="#architecture"><span class="dot" aria-hidden="true"></span>Architecture</a>
+        <a href="#honeypots"><span class="dot" aria-hidden="true"></span>Honeypot config</a>
+        <a href="#parameters"><span class="dot" aria-hidden="true"></span>Parameters</a>
+        <a href="#types"><span class="dot" aria-hidden="true"></span>Honeypot types</a>
+        <a href="#install"><span class="dot" aria-hidden="true"></span>Install</a>
+        <a href="#ops"><span class="dot" aria-hidden="true"></span>How it operates</a>
+        <a href="#use"><span class="dot" aria-hidden="true"></span>Use cases</a>
+        <a href="#links"><span class="dot" aria-hidden="true"></span>Links</a>
+      </nav>
+
+      <article class="card" id="doc" aria-label="NetDefender documentation">
+        <section class="block reveal" id="overview">
+          <h2>Overview</h2>
+          <p><b>NetDefender</b> is a network defense and traffic redirection platform designed to sit at the intersection of <b>SDN</b> and <b>IDS</b>. Instead of only blocking traffic, it can selectively divert suspicious sessions into <b>container-based honeypots</b> to reduce risk and increase visibility.</p>
+          <p>At a high level, the SDN controller enforces policy through OVS flow rules, while Snort produces real-time alerts that can trigger re-routing decisions. This makes it useful for both protection and research.</p>
+
+          <h3>What it includes</h3>
+          <table>
+            <thead><tr><th>Capability</th><th>In practice</th></tr></thead>
+            <tbody>
+              <tr><td><b>Controller plane</b></td><td>Built on OSKen/Ryu-style controller logic for programmable policy.</td></tr>
+              <tr><td><b>Forwarding enforcement</b></td><td>Open vSwitch applies flow rules and steers traffic.</td></tr>
+              <tr><td><b>Threat detection</b></td><td>Snort analyzes traffic and raises alerts in real time.</td></tr>
+              <tr><td><b>Honeypot redirection</b></td><td>Suspicious connections are mapped by port and redirected to containers.</td></tr>
+              <tr><td><b>Basic orchestration</b></td><td>Container lifecycle controls allow scaling honeypot instances.</td></tr>
+            </tbody>
+          </table>
+
+          <div class="callout">
+            <p style="margin:0"><b>Note:</b> In configuration files, lines starting with <span class="inline">#</span> are comments.</p>
+          </div>
+        </section>
+
+        <section class="block reveal" id="requirements">
+          <h2>System requirements</h2>
+          <p>Choose one deployment model:</p>
+          <div class="cols">
+            <div class="mini">
+              <b>Two-server (Controller + IDS)</b>
+              <div>Ubuntu 22.04+ on both servers; Python 3.9+ on both.</div>
             </div>
-            <div class="feature-card">
-                <svg class="feature-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="17 1 21 5 17 9"/>
-                    <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
-                    <polyline points="7 23 3 19 7 15"/>
-                    <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
-                </svg>
-                <h3>Traffic Redirection</h3>
-                <p>Intelligent packet forwarding using Open vSwitch for seamless traffic redirection to honeypot containers.</p>
+            <div class="mini">
+              <b>Single-server (Combined)</b>
+              <div>Ubuntu 22.04+; Python 3.9+.</div>
             </div>
-            <div class="feature-card">
-                <svg class="feature-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                    <line x1="12" y1="9" x2="12" y2="13"/>
-                    <line x1="12" y1="17" x2="12.01" y2="17"/>
-                </svg>
-                <h3>Intrusion Detection</h3>
-                <p>Real-time threat detection powered by Snort IDS for comprehensive network security monitoring.</p>
-            </div>
-            <div class="feature-card">
-                <svg class="feature-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="3" width="7" height="7"/>
-                    <rect x="14" y="3" width="7" height="7"/>
-                    <rect x="14" y="14" width="7" height="7"/>
-                    <rect x="3" y="14" width="7" height="7"/>
-                </svg>
-                <h3>Container Orchestration</h3>
-                <p>Dynamic container lifecycle management for honeypot services with automated scaling capabilities.</p>
-            </div>
-            <div class="feature-card">
-                <svg class="feature-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                    <polyline points="14 2 14 8 20 8"/>
-                    <line x1="16" y1="13" x2="8" y2="13"/>
-                    <line x1="16" y1="17" x2="8" y2="17"/>
-                    <polyline points="10 9 9 9 8 9"/>
-                </svg>
-                <h3>Extensible Policies</h3>
-                <p>Flexible policy framework allowing customizable defense strategies and traffic handling rules.</p>
-            </div>
-        </div>
-    </section>
+          </div>
+          <div class="callout">
+            <p style="margin:0"><b>Order matters:</b> install and configure the controller host first, then set up the Snort host (two-server mode).</p>
+          </div>
+        </section>
 
-    <!-- System Requirements -->
-    <section id="requirements">
-        <h2>System Requirements</h2>
-        <div class="requirements-grid">
-            <div class="requirement-card">
-                <h3>Ryu Server</h3>
-                <div class="requirement-item">
-                    <span class="requirement-label">Operating System</span>
-                    <span class="requirement-value">Ubuntu 22.04</span>
-                </div>
-                <div class="requirement-item">
-                    <span class="requirement-label">Python Version</span>
-                    <span class="requirement-value">Python 3.9</span>
-                </div>
-                <div class="requirement-item">
-                    <span class="requirement-label">Role</span>
-                    <span class="requirement-value">SDN Controller</span>
-                </div>
-            </div>
-            <div class="requirement-card">
-                <h3>Snort Server</h3>
-                <div class="requirement-item">
-                    <span class="requirement-label">Operating System</span>
-                    <span class="requirement-value">Ubuntu 22.04</span>
-                </div>
-                <div class="requirement-item">
-                    <span class="requirement-label">Python Version</span>
-                    <span class="requirement-value">Python 3.9+</span>
-                </div>
-                <div class="requirement-item">
-                    <span class="requirement-label">Role</span>
-                    <span class="requirement-value">IDS/IPS</span>
-                </div>
-            </div>
-        </div>
-    </section>
+        <section class="block reveal" id="architecture">
+          <h2>Network architecture</h2>
+          <p>The topology below illustrates how forwarding, detection, and diversion connect: OVS forwards traffic, the controller evaluates policy, and alerts from Snort can result in redirecting selected flows into honeypot containers.</p>
+          <div class="imgwrap">
+            <img loading="lazy" alt="NetDefender network architecture diagram" src="https://github.com/user-attachments/assets/3c2be482-1a8f-49ce-82ce-e933007d856f" />
+          </div>
+        </section>
 
-    <!-- Installation Guide -->
-    <section id="installation">
-        <h2>Installation Guide</h2>
-        <div class="tabs-container">
-            <div class="tab-buttons">
-                <button class="tab-button active" onclick="openTab(event, 'ryu')">Ryu Server Installation</button>
-                <button class="tab-button" onclick="openTab(event, 'snort')">Snort Server Installation</button>
-                <button class="tab-button" onclick="openTab(event, 'single')">Single Server Deployment</button>
-            </div>
-            <div id="ryu" class="tab-content active">
-                <h3>Ryu Server Setup</h3>
-                <p style="margin-bottom: 1rem; color: var(--text-secondary);">Execute the following commands to install the Ryu controller:</p>
-                <pre><code><span class="bash-comment"># Switch to root user</span>
-<span class="bash-command">sudo -s</span>
-
-<span class="bash-comment"># Install Git</span>
-<span class="bash-command">apt install git -y</span>
-
-<span class="bash-comment"># Clone the NetDefender repository</span>
-<span class="bash-command">git clone https://github.com/sinyuan1022/NetDefender.git</span>
-
-<span class="bash-comment"># Navigate to the Ryu directory</span>
-<span class="bash-command">cd ./NetDefender/ryu/</span>
-
-<span class="bash-comment"># Run the Ryu installation script</span>
-<span class="bash-command">bash ./ryu_install.sh</span></code></pre>
-            </div>
-            <div id="snort" class="tab-content">
-                <h3>Snort Server Setup</h3>
-                <p style="margin-bottom: 1rem; color: var(--text-secondary);"><strong>Prerequisites:</strong> Complete the Ryu server installation first.</p>
-                <pre><code><span class="bash-comment"># Switch to root user</span>
-<span class="bash-command">sudo -s</span>
-
-<span class="bash-comment"># Install Git</span>
-<span class="bash-command">apt install git -y</span>
-
-<span class="bash-comment"># Clone the NetDefender repository</span>
-<span class="bash-command">git clone https://github.com/sinyuan1022/NetDefender.git</span>
-
-<span class="bash-comment"># Navigate to the Snort directory</span>
-<span class="bash-command">cd ./NetDefender/snort/</span>
-
-<span class="bash-comment"># Run the Snort installation script</span>
-<span class="bash-command">bash ./snort_install.sh</span></code></pre>
-            </div>
-            <div id="single" class="tab-content">
-                <h3>Single Server Deployment</h3>
-                <p style="margin-bottom: 1rem; color: var(--text-secondary);"><strong>Note:</strong> Use this option only if you want to combine both Ryu and Snort on a single server.</p>
-                <pre><code><span class="bash-comment"># Switch to root user</span>
-<span class="bash-command">sudo -s</span>
-
-<span class="bash-comment"># Install Git</span>
-<span class="bash-command">apt install git -y</span>
-
-<span class="bash-comment"># Clone the NetDefender repository</span>
-<span class="bash-command">git clone https://github.com/sinyuan1022/NetDefender.git</span>
-
-<span class="bash-comment"># Navigate to the root directory</span>
-<span class="bash-command">cd ./NetDefender/</span>
-
-<span class="bash-comment"># Run the combined installation script</span>
-<span class="bash-command">bash ./singel.sh</span></code></pre>
-            </div>
-        </div>
-    </section>
-
-    <!-- Honeypot Configuration -->
-    <section id="configuration">
-        <h2>Honeypot Configuration</h2>
-        <div class="architecture-container">
-            <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">NetDefender uses a JSON-based configuration file to define honeypot containers with flexible port mapping:</p>
-            <pre style="text-align: left;"><code><span class="json-key">{</span>
-  <span class="json-key">"containers"</span>: [
+        <section class="block reveal" id="honeypots">
+          <h2>Honeypot configuration (JSON)</h2>
+          <p>Honeypots are declared via a JSON file. Each container definition includes an image name, a unique identifier, and one or more port mappings. Multi-instance scaling can be enabled when you expect higher traffic.</p>
+          <pre><code>{
+  "containers": [
     {
-      <span class="json-key">"image_name"</span>: <span class="json-string">"cowrie/cowrie"</span>,
-      <span class="json-key">"name"</span>: <span class="json-string">"ssh"</span>,
-      <span class="json-key">"ports"</span>: [
-        {
-          <span class="json-key">"host_port"</span>: <span class="json-number">22</span>,
-          <span class="json-key">"container_port"</span>: <span class="json-number">2222</span>,
-          <span class="json-key">"protocol"</span>: <span class="json-string">"tcp"</span>
-        }
+      "image_name": "cowrie/cowrie",
+      "name": "ssh",
+      "ports": [
+        { "host_port": 22, "container_port": 2222, "protocol": "tcp" }
       ],
-      <span class="json-key">"command"</span>: <span class="json-string">""</span>,
-      <span class="json-key">"multi"</span>: <span class="json-string">"yes"</span>,
-      <span class="json-key">"max"</span>: <span class="json-number">10</span>,
-      <span class="json-key">"max_containers"</span>: <span class="json-number">10</span>,
-      <span class="json-key">"send_response"</span>: <span class="json-string">"yes"</span>
+      "command": "",
+      "multi": "yes",
+      "max": 10,
+      "max_containers": 10,
+      "send_response": "yes"
     },
     {
-      <span class="json-key">"image_name"</span>: <span class="json-string">"dinotools/dionaea"</span>,
-      <span class="json-key">"name"</span>: <span class="json-string">"dionaea"</span>,
-      <span class="json-key">"ports"</span>: [
-        {<span class="json-key">"host_port"</span>: <span class="json-number">21</span>, <span class="json-key">"container_port"</span>: <span class="json-number">21</span>, <span class="json-key">"protocol"</span>: <span class="json-string">"tcp"</span>},
-        {<span class="json-key">"host_port"</span>: <span class="json-number">80</span>, <span class="json-key">"container_port"</span>: <span class="json-number">80</span>, <span class="json-key">"protocol"</span>: <span class="json-string">"tcp"</span>},
-        {<span class="json-key">"host_port"</span>: <span class="json-number">443</span>, <span class="json-key">"container_port"</span>: <span class="json-number">443</span>, <span class="json-key">"protocol"</span>: <span class="json-string">"tcp"</span>},
-        <span class="bash-comment">// ... additional ports</span>
+      "image_name": "dinotools/dionaea",
+      "name": "dionaea",
+      "ports": [
+        {"host_port": 21, "container_port": 21, "protocol": "tcp"},
+        {"host_port": 69, "container_port": 69, "protocol": "udp"},
+        {"host_port": 80, "container_port": 80, "protocol": "tcp"},
+        {"host_port": 443, "container_port": 443, "protocol": "tcp"},
+        {"host_port": 445, "container_port": 445, "protocol": "tcp"}
       ],
-      <span class="json-key">"multi"</span>: <span class="json-string">"yes"</span>,
-      <span class="json-key">"max"</span>: <span class="json-number">10</span>,
-      <span class="json-key">"max_containers"</span>: <span class="json-number">10</span>,
-      <span class="json-key">"send_response"</span>: <span class="json-string">"yes"</span>
+      "multi": "yes",
+      "max": 10,
+      "max_containers": 10,
+      "send_response": "yes"
     }
   ]
-<span class="json-key">}</span></code></pre>
+}</code></pre>
+          <p class="muted">The example above is shortened for readability on a landing page. For the full multi-port list, see the repository documentation.</p>
+        </section>
+
+        <section class="block reveal" id="parameters">
+          <h2>Configuration parameters</h2>
+
+          <h3>Container-level fields</h3>
+          <table>
+            <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>image_name</code></td><td>String</td><td>Yes</td><td>Docker image for the honeypot.</td></tr>
+              <tr><td><code>name</code></td><td>String</td><td>Yes</td><td>Unique logical name for the honeypot.</td></tr>
+              <tr><td><code>ports</code></td><td>Array</td><td>Yes</td><td>Port mappings used for matching and redirection.</td></tr>
+              <tr><td><code>command</code></td><td>String</td><td>No</td><td>Optional Docker args; remove if unused.</td></tr>
+              <tr><td><code>multi</code></td><td>String</td><td>No</td><td>Enable multiple instances (<code>yes</code>/<code>no</code>).</td></tr>
+              <tr><td><code>max</code></td><td>Integer</td><td>No</td><td>Max concurrent connections per container.</td></tr>
+              <tr><td><code>max_containers</code></td><td>Integer</td><td>No</td><td>Max additional instances (excluding the primary).</td></tr>
+              <tr><td><code>send_response</code></td><td>String</td><td>No</td><td>Whether the honeypot actively responds (<code>yes</code>/<code>no</code>).</td></tr>
+            </tbody>
+          </table>
+
+          <h3>Port mapping fields</h3>
+          <table>
+            <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>host_port</code></td><td>Integer</td><td>Yes</td><td>Externally monitored port.</td></tr>
+              <tr><td><code>container_port</code></td><td>Integer</td><td>Yes</td><td>Internal container port receiving redirected traffic.</td></tr>
+              <tr><td><code>protocol</code></td><td>String</td><td>Yes</td><td><code>tcp</code> or <code>udp</code>.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="block reveal" id="types">
+          <h2>Honeypot types</h2>
+
+          <h3>Cowrie (SSH/Telnet)</h3>
+          <p><b>Goal:</b> simulate interactive SSH/Telnet to log brute-force attempts, commands, and dropper behavior.</p>
+          <p><b>Image:</b> <span class="inline">cowrie/cowrie</span> • <b>External port:</b> 22 • <b>Internal port:</b> 2222</p>
+
+          <h3>Dionaea (multi-service)</h3>
+          <p><b>Goal:</b> expose multiple emulated services to attract common scanning and exploitation attempts across protocols.</p>
+          <p><b>Image:</b> <span class="inline">dinotools/dionaea</span></p>
+          <table>
+            <thead><tr><th>Service examples</th><th>Ports</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Web</td><td>80 / 443</td><td>HTTP and HTTPS traffic capture.</td></tr>
+              <tr><td>File / legacy</td><td>21 / 69</td><td>FTP and TFTP are commonly scanned.</td></tr>
+              <tr><td>Windows-facing</td><td>445</td><td>SMB-related probing and exploits.</td></tr>
+              <tr><td>DB / messaging</td><td>1433 / 3306 / 1883</td><td>MSSQL, MySQL, MQTT are frequent targets.</td></tr>
+            </tbody>
+          </table>
+          <p class="muted">For the complete port list used by Dionaea in this project, see the repository configuration examples.</p>
+        </section>
+
+        <section class="block reveal" id="install">
+          <h2>Installation</h2>
+
+          <h3>VMware Workstation Pro (if applicable)</h3>
+          <p>If you run this in VMware Workstation Pro, promiscuous capture may require elevated permissions:</p>
+          <pre><code>sudo -s
+chmod a+rw /dev/vmnet0</code></pre>
+          <p class="muted">Reference: VMware documentation on promiscuous mode.</p>
+
+          <h3>Controller host (Ryu/OSKen)</h3>
+          <pre><code>sudo -s
+apt install git -y
+git clone https://github.com/sinyuan1022/NetDefender.git
+cd ./NetDefender/ryu/
+bash ./ryu_install.sh</code></pre>
+
+          <h3>IDS host (Snort)</h3>
+          <pre><code>sudo -s
+apt install git -y
+git clone https://github.com/sinyuan1022/NetDefender.git
+cd ./NetDefender/snort/
+bash ./snort_install.sh</code></pre>
+
+          <h3>Single-server mode (optional)</h3>
+          <pre><code>sudo -s
+apt install git -y
+git clone https://github.com/sinyuan1022/NetDefender.git
+cd ./NetDefender/
+bash ./singel.sh</code></pre>
+        </section>
+
+        <section class="block reveal" id="ops">
+          <h2>How it operates (conceptual flow)</h2>
+          <p>NetDefender’s behavior can be understood as an event loop across enforcement, detection, and action: OVS forwards traffic, Snort flags suspicious patterns, the controller evaluates policy, and the system redirects matching ports into the appropriate honeypot container—optionally scaling instances under load.</p>
+          <table>
+            <thead><tr><th>Stage</th><th>Role</th></tr></thead>
+            <tbody>
+              <tr><td>Forward</td><td>OVS handles packet forwarding and applies controller flow rules.</td></tr>
+              <tr><td>Detect</td><td>Snort inspects traffic and produces alerts.</td></tr>
+              <tr><td>Decide</td><td>Policy layer maps alerts and ports to actions.</td></tr>
+              <tr><td>Divert</td><td>Suspicious sessions are redirected to honeypot containers.</td></tr>
+              <tr><td>Observe</td><td>Honeypots interact and log activity for later analysis.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="block reveal" id="use">
+          <h2>Use cases</h2>
+          <div class="cols">
+            <div class="mini"><b>Security research</b><div>Study scanning, exploitation patterns, and malware behavior in a controlled environment.</div></div>
+            <div class="mini"><b>Threat intelligence</b><div>Collect telemetry from brute-force, SMB probing, SQL attacks, and IoT-style bot activity.</div></div>
+          </div>
+          <div class="mini" style="margin-top:12px"><b>Proactive defense</b><div>Keep production surfaces safer by detouring suspicious sessions while preserving evidence.</div></div>
+        </section>
+
+        <section class="block reveal" id="links">
+          <h2>Links</h2>
+          <p><b>Repository:</b> <a href="https://github.com/sinyuan1022/NetDefender" target="_blank" rel="noreferrer">https://github.com/sinyuan1022/NetDefender</a></p>
+          <p class="muted">Related components: OSKen/Ryu, Open vSwitch, Snort, Cowrie, Dionaea.</p>
+        </section>
+
+        <div class="footer">
+          <div>© <span id="year"></span> NetDefender • Dark, low-glare single-page site for GitHub Pages</div>
+          <div style="margin-top:6px">Deploy by committing this file as <span class="inline">index.html</span> and enabling GitHub Pages.</div>
         </div>
+      </article>
     </section>
+  </main>
 
-    <!-- Supported Honeypots -->
-    <section id="honeypots">
-        <h2>Supported Honeypots</h2>
-        <div class="honeypot-grid">
-            <div class="honeypot-card">
-                <svg class="feature-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                </svg>
-                <h3>SSH Honeypot (Cowrie)</h3>
-                <p class="honeypot-type">Medium-interaction SSH/Telnet honeypot</p>
-                <p>Emulates an SSH service to capture brute-force attacks, shell interactions, and file downloads. Logs all attacker commands and activities.</p>
-                <div class="ports-container">
-                    <span class="port-badge">Port 22 (TCP)</span>
-                </div>
-            </div>
-            <div class="honeypot-card">
-                <svg class="feature-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-                    <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
-                    <line x1="12" y1="22.08" x2="12" y2="12"/>
-                </svg>
-                <h3>Multi-Service Honeypot (Dionaea)</h3>
-                <p class="honeypot-type">Low-interaction multi-protocol honeypot</p>
-                <p>Comprehensive honeypot emulating multiple vulnerable services simultaneously. Captures malware, exploits, and attack patterns across various protocols.</p>
-                <div class="ports-container">
-                    <span class="port-badge">21 (FTP)</span>
-                    <span class="port-badge">42 (WINS)</span>
-                    <span class="port-badge">69 (TFTP)</span>
-                    <span class="port-badge">80 (HTTP)</span>
-                    <span class="port-badge">135 (RPC)</span>
-                    <span class="port-badge">443 (HTTPS)</span>
-                    <span class="port-badge">445 (SMB)</span>
-                    <span class="port-badge">1433 (MSSQL)</span>
-                    <span class="port-badge">1723 (PPTP)</span>
-                    <span class="port-badge">1883 (MQTT)</span>
-                    <span class="port-badge">1900 (UPnP)</span>
-                    <span class="port-badge">3306 (MySQL)</span>
-                    <span class="port-badge">5060/5061 (SIP)</span>
-                    <span class="port-badge">11211 (Memcached)</span>
-                </div>
-            </div>
-        </div>
-    </section>
+  <script>
+    (function(){
+      const repoUrl = 'https://github.com/sinyuan1022/NetDefender';
+      const copyBtn = document.getElementById('copyRepo');
+      const search = document.getElementById('search');
+      const year = document.getElementById('year');
+      year.textContent = new Date().getFullYear();
 
-    <!-- Network Architecture -->
-    <section id="architecture">
-        <h2>Network Architecture</h2>
-        <div class="architecture-container">
-            <img src="https://github.com/user-attachments/assets/3c2be482-1a8f-49ce-82ce-e933007d856f" alt="NetDefender Network Architecture Diagram">
-            <p class="architecture-caption">NetDefender network topology showing SDN controller, Open vSwitch, Snort IDS, and containerized honeypot deployment</p>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer>
-        <div class="footer-links">
-            <a href="https://github.com/sinyuan1022/NetDefender" class="footer-link" target="_blank" rel="noopener noreferrer">
-                <svg class="github-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                </svg>
-                GitHub Repository
-            </a>
-            <a href="https://github.com/sinyuan1022/NetDefender#readme" class="footer-link" target="_blank" rel="noopener noreferrer">
-                <svg class="github-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                    <polyline points="14 2 14 8 20 8"/>
-                    <line x1="16" y1="13" x2="8" y2="13"/>
-                    <line x1="16" y1="17" x2="8" y2="17"/>
-                    <polyline points="10 9 9 9 8 9"/>
-                </svg>
-                Documentation
-            </a>
-        </div>
-        <p class="copyright">© 2026 NetDefender Project. All rights reserved.</p>
-    </footer>
-
-    <script>
-        // Tab functionality
-        function openTab(evt, tabName) {
-            const tabContents = document.getElementsByClassName('tab-content');
-            for (let i = 0; i < tabContents.length; i++) {
-                tabContents[i].classList.remove('active');
-            }
-            
-            const tabButtons = document.getElementsByClassName('tab-button');
-            for (let i = 0; i < tabButtons.length; i++) {
-                tabButtons[i].classList.remove('active');
-            }
-            
-            document.getElementById(tabName).classList.add('active');
-            evt.currentTarget.classList.add('active');
+      copyBtn.addEventListener('click', async () => {
+        try{
+          await navigator.clipboard.writeText(repoUrl);
+          const old = copyBtn.textContent;
+          copyBtn.textContent = 'Copied';
+          setTimeout(()=>copyBtn.textContent = old, 1100);
+        } catch (e){
+          prompt('Copy this URL:', repoUrl);
         }
+      });
 
-        // Scroll indicator
-        window.addEventListener('scroll', () => {
-            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-            const scrolled = (winScroll / height) * 100;
-            document.getElementById('scrollIndicator').style.width = scrolled + '%';
+      // Simple in-page filter across sections
+      const blocks = Array.from(document.querySelectorAll('#doc .block'));
+      const norm = s => (s || '').toLowerCase();
+      function apply(q){
+        const query = norm(q).trim();
+        if(!query){ blocks.forEach(b=>b.classList.remove('hide')); return; }
+        blocks.forEach(b => {
+          b.classList.toggle('hide', !norm(b.innerText).includes(query));
         });
+      }
+      let timer = null;
+      search.addEventListener('input', (e)=>{
+        clearTimeout(timer);
+        timer = setTimeout(()=>apply(e.target.value), 80);
+      });
 
-        // Smooth scroll for navigation links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
+      // Smooth anchors
+      document.querySelectorAll('a[href^="#"]').forEach(a => {
+        a.addEventListener('click', (ev) => {
+          const id = a.getAttribute('href');
+          if(!id || id === '#') return;
+          const el = document.querySelector(id);
+          if(!el) return;
+          ev.preventDefault();
+          el.scrollIntoView({behavior:'smooth', block:'start'});
+          history.replaceState(null, '', id);
         });
-    </script>
+      });
+
+      // Scroll reveal
+      const els = Array.from(document.querySelectorAll('.reveal'));
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(en=>{
+          if(en.isIntersecting){
+            en.target.classList.add('show');
+            io.unobserve(en.target);
+          }
+        });
+      }, {threshold: 0.12});
+      els.forEach(el => io.observe(el));
+    })();
+  </script>
 </body>
 </html>
