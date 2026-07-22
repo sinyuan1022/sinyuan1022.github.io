@@ -498,16 +498,20 @@ Before running the commands, please navigate to the corresponding directory unde
 Example:
 
 Ryu Server:
-cd ./NetDefender/ryu
-osken-manager ovs.py
+  cd ./NetDefender/ryu
+  osken-manager ovs.py
 
 Snort Server:
-cd ./NetDefender/snort
-python3 pigrelay.py
+##INTERFACE = monitor interface name (e.g., ens33)
+  cd ./NetDefender/snort
+  snort -i $INTERFACE -A unsock -l /tmp -c /etc/snort/snort.conf
+  python3 pigrelay.py
 
 For single-server deployment, the startup process is the same as the Ryu Server:
-cd ./NetDefender/ryu
-osken-manager ovs.py
+##INTERFACE = monitor interface name (e.g., ens33)
+  snort -i $INTERFACE -A unsock -l /tmp -c /etc/snort/snort.conf
+  cd ./NetDefender/ryu
+  osken-manager ovs.py
 </code></pre>
         </section>
 
