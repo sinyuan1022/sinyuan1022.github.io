@@ -483,6 +483,32 @@ apt install git -y
 git clone https://github.com/sinyuan1022/NetDefender.git
 cd ./NetDefender/
 bash ./singel.sh</code></pre>
+          <h3>Manual startup mode for multi-server deployment</h3>
+<pre><code>
+For a two-server deployment, manually start the services as follows:
+
+Ryu Server:
+osken-manager ovs.py
+
+Snort Server:
+python3 pigrelay.py
+
+Before running the commands, please navigate to the corresponding directory under <code>./NetDefender/</code>.
+
+Example:
+
+Ryu Server:
+cd ./NetDefender/ryu
+osken-manager ovs.py
+
+Snort Server:
+cd ./NetDefender/snort
+python3 pigrelay.py
+
+For single-server deployment, the startup process is the same as the Ryu Server:
+cd ./NetDefender/ryu
+osken-manager ovs.py
+</code></pre>
         </section>
 
         <section class="block reveal" id="ops">
