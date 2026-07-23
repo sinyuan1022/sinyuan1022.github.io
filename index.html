@@ -334,10 +334,6 @@
               <tr><td><b>Basic orchestration</b></td><td>Container lifecycle controls allow scaling honeypot instances.</td></tr>
             </tbody>
           </table>
-
-          <div class="callout">
-            <p style="margin:0"><b>Note:</b> In configuration files, lines starting with <span class="inline">#</span> are comments.</p>
-          </div>
         </section>
 
         <section class="block reveal" id="requirements">
@@ -491,6 +487,9 @@ git clone https://github.com/sinyuan1022/NetDefender.git
 cd ./NetDefender/
 bash ./singel.sh</code></pre>
           <h3>Manual startup mode for multi-server deployment</h3>
+           <div class="callout">
+            <p style="margin:0"><b>Note:</b>INTERFACE = monitor interface name (e.g., ens33)</p>
+           </div>
 <pre><code>
 For a two-server deployment, manually start the services as follows:
 
@@ -509,13 +508,11 @@ Ryu Server:
   osken-manager ovs.py
 
 Snort Server:
-##INTERFACE = monitor interface name (e.g., ens33)
   cd ./NetDefender/snort
   snort -i $INTERFACE -A unsock -l /tmp -c /etc/snort/snort.conf
   python3 pigrelay.py
 
 For single-server deployment, the startup process is the same as the Ryu Server:
-##INTERFACE = monitor interface name (e.g., ens33)
   snort -i $INTERFACE -A unsock -l /tmp -c /etc/snort/snort.conf
   cd ./NetDefender/ryu
   osken-manager ovs.py
