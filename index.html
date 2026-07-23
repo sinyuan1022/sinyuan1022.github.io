@@ -470,6 +470,13 @@ git clone https://github.com/sinyuan1022/NetDefender.git
 cd ./NetDefender/ryu/
 bash ./ryu_install.sh</code></pre>
 
+          <div class="callout">
+            <p style="margin:0"><b>Order matters:</b> If you plan to install Ryu via SSH, it is recommended to use the second network interface.</p>
+            <p style="margin:0"><b>Note:</b> A second network interface is optional. If you only have one network interface, after the installation is complete, clear the existing OpenFlow rules with:</p>
+            <pre><code>ovs-ofctl del-flows br0 -O OpenFlow13</code></pre>
+            <p style="margin:0"></b> Then restart the Ryu controller and reconnect to Snort.</p>
+          </div>
+          
           <h3>IDS host (Snort)</h3>
           <pre><code>sudo -s
 apt install git -y
